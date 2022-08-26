@@ -1,11 +1,35 @@
-const proto = {
-  hello: function hello() {
-    return `Hello, my name is ${ this.name} `;
-  }
+import Events from 'eventemitter3';
+
+const rawMixin = function () {
+  const attrs = {};
+
+  return Object.assign(this, {
+    set (name, value) {
+      attrs[name] = value;
+
+      this.emit('change', {
+        prop: name,
+        value: value
+      });
+    },
+
+    get (name) {
+      return attrs[name];
+    }
+  }, Events.prototype);
 };
 
-const george = Object.assign({}, proto, {name: 'George'});
+const mixinModel = (target) => rawMixin.call(target);
 
-const msg = george.hello();
+const george = { name: 'george' };
+const model = mixinModel(george);
 
-console.log(msg);
+model.on('change', data => console.log(data));
+
+model.set('name', 'Sam');
+/*
+{
+  prop: 'name',
+  value: 'Sam'
+}
+*/
