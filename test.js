@@ -1,8 +1,11 @@
-const o1 = { a: 1};
-const o2 = { b: 2};
-const o3 = { c: 3};
+const proto = {
+  hello: function hello() {
+    return `Hello, my name is ${ this.name} `;
+  }
+};
 
-const obj = Object.assign(o1, o2, o3);
-console.log(obj);
-console.log(o1);
-console.log(o2, o3);
+const george = Object.assign({}, proto, {name: 'George'});
+
+const msg = george.hello();
+
+console.log(msg);
