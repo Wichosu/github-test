@@ -1,8 +1,35 @@
-const o1 = { a: 1};
-const o2 = { b: 2};
-const o3 = { c: 3};
+import Events from 'eventemitter3';
 
-const obj = Object.assign(o1, o2, o3);
-console.log(obj);
-console.log(o1);
-console.log(o2, o3);
+const rawMixin = function () {
+  const attrs = {};
+
+  return Object.assign(this, {
+    set (name, value) {
+      attrs[name] = value;
+
+      this.emit('change', {
+        prop: name,
+        value: value
+      });
+    },
+
+    get (name) {
+      return attrs[name];
+    }
+  }, Events.prototype);
+};
+
+const mixinModel = (target) => rawMixin.call(target);
+
+const george = { name: 'george' };
+const model = mixinModel(george);
+
+model.on('change', data => console.log(data));
+
+model.set('name', 'Sam');
+/*
+{
+  prop: 'name',
+  value: 'Sam'
+}
+*/
